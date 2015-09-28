@@ -1,0 +1,14 @@
+.*
+*.log
+/logs
+!.gitignore
+*.class
+*.war
+bin/
+target/
+target/*
+build/*
+build/
+/build
+*.ipr
+*.iml
