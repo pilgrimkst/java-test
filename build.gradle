@@ -16,6 +16,6 @@ dependencies {
             libraries.logback,
             libraries.guava
 
-    testCompile libraries.commonTest,
+    testCompile libraries.junit,
             libraries.spock
 }

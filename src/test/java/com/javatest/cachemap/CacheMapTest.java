@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 /**
  * JUnit test case for a CacheMap implementation.
- * <p/>
+ * <p>
  * Feel free to add more methods.
  */
 public class CacheMapTest extends TestCase {
@@ -15,7 +15,7 @@ public class CacheMapTest extends TestCase {
         Clock.setTime(1000);
 
         //TODO instantiate cache object
-
+        cache = new CacheMapImpl<>(Clock::getTime);
         cache.setTimeToLive(TIME_TO_LIVE);
     }
 

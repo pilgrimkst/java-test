@@ -61,7 +61,7 @@ public interface CacheMap<KeyType, ValueType>  {
      * If there already is an item under the given key, it will be replaced by the new value. <p>
      *
      * @param key may not be null
-     * @param item may be null, in which case the cache entry will be removed (if it existed).
+     * @param value may be null, in which case the cache entry will be removed (if it existed).
      * @return the previous value, or null if none
      */
     public ValueType put(KeyType key, ValueType value);
