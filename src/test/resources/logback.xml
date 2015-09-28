@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOG_PATTERN"
+              value="%d{dd.MM.yy HH:mm:ss.SSS} %X{REQ_ID} %marker %-5level [%thread] %class{10}:%line  - %msg%n"/>
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <logger name="com.javatest" level="INFO"/>
+    <logger name="org.springframework" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

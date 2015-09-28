@@ -1,4 +1,4 @@
-package cachemap;
+package com.javatest.cachemap;
 /**
  * A generic cache. Works just like a Map, except that entries automatically "disappear"
  * when they expire. <p>

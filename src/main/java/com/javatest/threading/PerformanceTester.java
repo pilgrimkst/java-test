@@ -1,4 +1,4 @@
-package threading;
+package com.javatest.threading;
 public interface PerformanceTester {
 	
 	/**

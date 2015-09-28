@@ -1,4 +1,4 @@
-package refactor;
+package com.javatest.refactor;
 
 public class PhoneNumber {
     private Num number;

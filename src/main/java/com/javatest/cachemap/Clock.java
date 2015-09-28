@@ -1,4 +1,4 @@
-package cachemap;
+package com.javatest.cachemap;
 /**
  * Provides a way to override the system time.
  * Useful for unit-testing purposes.

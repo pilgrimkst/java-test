@@ -1,16 +1,21 @@
-group 'java-test'
+group 'com.javatest'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply from: 'dependencies.gradle'
 
-sourceCompatibility = 1.5
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.11'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile libraries.slf4j,
+            libraries.logback,
+            libraries.guava
+
+    testCompile libraries.commonTest,
+            libraries.spock
 }

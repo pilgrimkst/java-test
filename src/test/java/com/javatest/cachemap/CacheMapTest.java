@@ -1,4 +1,4 @@
-package cachemap;
+package com.javatest.cachemap;
 
 import junit.framework.TestCase;
 
@@ -7,7 +7,7 @@ import junit.framework.TestCase;
  * <p/>
  * Feel free to add more methods.
  */
-public class CacheMap_UnitTest extends TestCase {
+public class CacheMapTest extends TestCase {
     CacheMap<Integer, String> cache;
     final static long TIME_TO_LIVE = 1000;
 

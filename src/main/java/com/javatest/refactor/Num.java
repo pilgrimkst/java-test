@@ -1,4 +1,4 @@
-package refactor;
+package com.javatest.refactor;
 
 class Num {
 	private String val;

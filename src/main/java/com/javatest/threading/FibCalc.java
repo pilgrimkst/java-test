@@ -1,4 +1,4 @@
-package threading;
+package com.javatest.threading;
 
 /**
  * A Fibonacci calculator.
