@@ -1,18 +1,18 @@
 package com.javatest.cachemap;
 
-import java.util.TreeMap;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
 public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, ValueType> {
     private long timeToLive;
     private WeakHashMap<KeyType, TimedValue> map = new WeakHashMap<>();
-    private TreeMap<Long, KeyType> actualKeys = new TreeMap<>();
+    private CacheKeyHolder<KeyType> cacheKeys;
 
     private final Supplier<Long> timestampSupplier;
 
     public CacheMapImpl(Supplier<Long> timestampSupplier) {
         this.timestampSupplier = timestampSupplier;
+        cacheKeys = new CacheKeyHolder<>(timestampSupplier.get(), 1000, 10);
     }
 
     @Override
@@ -27,13 +27,14 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
 
     @Override
     public ValueType put(KeyType key, ValueType value) {
-        TimedValue oldValue = map.put(key, new TimedValue(value));
-        return oldValue == null || isExpired(oldValue) ? null : oldValue.value;
+        TimedValue oldValue = map.put(key, new TimedValue(value, timestampSupplier.get()));
+        cacheKeys.put(timestampSupplier.get(), key);
+        return isNullOrExpired(oldValue) ? null : oldValue.value;
     }
 
     @Override
     public void clearExpired() {
-        actualKeys.headMap(timestampSupplier.get() - getTimeToLive()).clear();
+        cacheKeys.clearExpired(timestampSupplier.get());
     }
 
     @Override
@@ -59,7 +60,7 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
     @Override
     public ValueType get(Object key) {
         TimedValue value = map.get(key);
-        return value == null || isExpired(value) ? null : value.value;
+        return value == null || isNullOrExpired(value) ? null : value.value;
     }
 
     @Override
@@ -67,15 +68,10 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
         return map.isEmpty() || haveNoActualKeys(map);
     }
 
-    private boolean haveNoActualKeys(WeakHashMap<KeyType, TimedValue> map) {
-        return !map.entrySet().stream().anyMatch(e -> !isOutdated(e.getValue().createdIn));
-    }
-
     @Override
     public ValueType remove(Object key) {
         TimedValue oldValue = map.remove(key);
         if (oldValue != null) {
-            actualKeys.remove(oldValue.createdIn);
             if (isNotExpired(oldValue)) return oldValue.value;
         }
         return null;
@@ -86,12 +82,16 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
         return map.size() - numberOfExpired(map);
     }
 
-    private int numberOfExpired(WeakHashMap<KeyType, TimedValue> map) {
-        return (int) map.entrySet().stream().filter(e -> isExpired(e.getValue())).count();
+    private boolean haveNoActualKeys(WeakHashMap<KeyType, TimedValue> map) {
+        return !map.entrySet().stream().anyMatch(e -> !isOutdated(e.getValue().createdIn));
     }
 
-    private boolean isExpired(TimedValue value) {
-        return isOutdated(value.createdIn);
+    private int numberOfExpired(WeakHashMap<KeyType, TimedValue> map) {
+        return (int) map.entrySet().stream().filter(e -> isNullOrExpired(e.getValue())).count();
+    }
+
+    private boolean isNullOrExpired(TimedValue value) {
+        return value == null || isOutdated(value.createdIn);
     }
 
     private boolean isOutdated(Long timestamp) {
@@ -99,16 +99,16 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
     }
 
     private boolean isNotExpired(TimedValue value) {
-        return !isExpired(value);
+        return !isNullOrExpired(value);
     }
 
     private class TimedValue {
         final ValueType value;
         final long createdIn;
 
-        private TimedValue(ValueType value) {
+        private TimedValue(ValueType value, Long createdIn) {
             this.value = value;
-            createdIn = timestampSupplier.get();
+            this.createdIn = createdIn;
         }
     }
 }
