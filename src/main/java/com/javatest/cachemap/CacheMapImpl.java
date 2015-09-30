@@ -7,7 +7,7 @@ import java.util.function.Supplier;
  * CacheMap implementation based on weakMap:
  * The keys in map stored as weak references, and this class only filters outdated values,
  * Strong references to keys are stored in CacheKeyHolder object
- * Main work of deleting outdated keys (removing Strong references to them) processed in CacheKeyHolder
+ * Work of deleting outdated keys (removing Strong references to them) delegated to CacheKeyHolder
  * @param <KeyType>
  * @param <ValueType>
  */
