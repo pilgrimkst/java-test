@@ -1,4 +1,7 @@
-package com.javatest.refactor;
+package com.javatest.refactor.model;
+
+import com.javatest.refactor.Person;
+import com.javatest.refactor.PhoneNumber;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -67,7 +70,7 @@ public class AddressDb {
 			  c = b.executeQuery();
 	if (c.next()) {
 		String foundName = c.getString("name");
-		PhoneNumber phoneNumber = new PhoneNumber(c.getString("phoneNumber"));			
+		PhoneNumber phoneNumber = new PhoneNumber(c.getString("phoneNumber"));
 		Person person = new Person(foundName, phoneNumber);
 		return person;
 	} else {

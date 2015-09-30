@@ -1,4 +1,6 @@
 package com.javatest.refactor;
+import com.javatest.refactor.model.AddressDb;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;

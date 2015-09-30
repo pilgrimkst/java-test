@@ -1,29 +1,35 @@
 package com.javatest.refactor;
-import java.util.Date;
 
 public class Person {
-	private String NAME;
-	private PhoneNumber phoneNumber;
-	private Date date;
-	
-	public Person(String name, PhoneNumber phoneNumber) {
-		this.NAME = name;
-	}
+    private String name;
+    private PhoneNumber phoneNumber;
 
-	public String getName() {
-		return NAME;
-	}
+    public Person(String name, PhoneNumber phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
 
-	public void setName(String name) {
-		name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public PhoneNumber getPhoneNumber() {
-		return phoneNumber;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setPhoneNumber(PhoneNumber phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    public PhoneNumber getPhoneNumber() {
+        return phoneNumber;
+    }
 
+    public void setPhoneNumber(PhoneNumber phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", phoneNumber=" + phoneNumber +
+                '}';
+    }
 }
