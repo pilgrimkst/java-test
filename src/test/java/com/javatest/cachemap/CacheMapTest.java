@@ -15,7 +15,7 @@ public class CacheMapTest extends TestCase {
         Clock.setTime(1000);
 
         //TODO instantiate cache object
-        cache = new CacheMapImpl<>(Clock::getTime);
+        cache = new CacheMapImpl<>(Clock::getTime, 1000);
         cache.setTimeToLive(TIME_TO_LIVE);
     }
 

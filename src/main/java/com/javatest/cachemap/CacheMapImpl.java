@@ -3,6 +3,14 @@ package com.javatest.cachemap;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
+/*
+ * CacheMap implementation based on weakMap:
+ * The keys in map stored as weak references, and this class only filters outdated values,
+ * Strong references to keys are stored in CacheKeyHolder object
+ * Main work of deleting outdated keys (removing Strong references to them) processed in CacheKeyHolder
+ * @param <KeyType>
+ * @param <ValueType>
+ */
 public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, ValueType> {
     private long timeToLive;
     private WeakHashMap<KeyType, TimedValue> map = new WeakHashMap<>();
@@ -10,9 +18,9 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
 
     private final Supplier<Long> timestampSupplier;
 
-    public CacheMapImpl(Supplier<Long> timestampSupplier) {
+    public CacheMapImpl(Supplier<Long> timestampSupplier, int timeUnitSize) {
         this.timestampSupplier = timestampSupplier;
-        cacheKeys = new CacheKeyHolder<>(1000);
+        cacheKeys = new CacheKeyHolder<>(timeUnitSize);
     }
 
     @Override
@@ -28,7 +36,7 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
     @Override
     public ValueType put(KeyType key, ValueType value) {
         TimedValue oldValue = map.put(key, new TimedValue(value, timestampSupplier.get()));
-        cacheKeys.put(timestampSupplier.get() + timeToLive, timestampSupplier.get(), key);
+        cacheKeys.put(key, timestampSupplier.get(), timestampSupplier.get() + timeToLive);
         return oldValue == null || isExpired(oldValue) ? null : oldValue.value;
     }
 

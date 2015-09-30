@@ -15,7 +15,7 @@ class CacheKeyHolderTest extends Specification {
                 [key: "C", expiresAt: 11l, current: 7]
         ]
         when:
-        setOfKeysWithTimestamps.each { k -> holder.put(k.expiresAt, k.current, k.key) }
+        setOfKeysWithTimestamps.each { k -> holder.put(k.key, k.current, k.expiresAt) }
 
         then:
         holder.buckets.toString() == "[" +
@@ -32,7 +32,7 @@ class CacheKeyHolderTest extends Specification {
                 [key: "C", expiresAt: 15, current: 11]
         ]
         when:
-        setOfKeysWithTimestamps.each { k -> holder.put(k.expiresAt, k.current, k.key) }
+        setOfKeysWithTimestamps.each { k -> holder.put(k.key, k.current, k.expiresAt) }
 
         then:
         holder.buckets.toString() == "[" +

@@ -5,7 +5,6 @@ import java.util.LinkedList;
 /**
  * Holds cache keys for CacheMapImpl. to speedup cleaning expired values keys are separated in groups,
  * and are deleted when whole group is expired. this helps to reduce complexity of throwing outdated values
- *
  * @param <T>
  */
 public class CacheKeyHolder<T> {
@@ -13,13 +12,19 @@ public class CacheKeyHolder<T> {
     private long timeUnitSize;
 
     /***
+     * Creates CacheKeyHolder with sertain timeUnitSize.
      * @param timeUnitSize - size of time group in milliseconds
+     *                     This parameter sets ballance between memory and cpu consumption:
+     *                     The bigger is group - you get more memory overhead
+     *                     (if timeUnitSize is 1000 then any key that is expired at 1000 won't be deleted until 1000 will pass)
+     *                     At this price you get faster cleanup, The whole group that expires at 1000 deletes in one action
+     *                     It gives you a constant time cleanup
      */
     public CacheKeyHolder(long timeUnitSize) {
         this.timeUnitSize = timeUnitSize;
     }
 
-    public void put(long expiresAt, long currentTimestamp, T key) {
+    public void put(T key, long currentTimestamp, long expiresAt) {
         add(expiresAt, key);
         clearExpired(currentTimestamp);
     }
