@@ -1,7 +1,6 @@
-package com.javatest.refactor.model;
+package com.javatest.refactor;
 
-import com.javatest.refactor.Person;
-import com.javatest.refactor.PhoneNumber;
+import com.javatest.refactor.model.Person;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,7 +35,7 @@ public class AddressDb {
 			statement = connection.prepareStatement("insert into AddressEntry values (?, ?, ?)");
 			statement.setLong(1, System.currentTimeMillis());
 			statement.setString(2, person.getName());
-			statement.setString(3, person.getPhoneNumber().getNumber());
+			statement.setString(3, person.getPhoneNumber());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -70,9 +69,7 @@ public class AddressDb {
 			  c = b.executeQuery();
 	if (c.next()) {
 		String foundName = c.getString("name");
-		PhoneNumber phoneNumber = new PhoneNumber(c.getString("phoneNumber"));
-		Person person = new Person(foundName, phoneNumber);
-		return person;
+		return new Person(foundName, c.getString("phoneNumber"));
 	} else {
 		return new Person("", null);
 			}
@@ -100,8 +97,7 @@ public class AddressDb {
 			List<Person> entries = new LinkedList<Person>();
 			while (result.next()) {
 				String name = result.getString("name");
-				PhoneNumber phoneNumber = new PhoneNumber(result.getString("phoneNumber"));			
-				Person person = new Person(name, phoneNumber);
+				Person person = new Person(name, result.getString("phoneNumber"));
 				entries.add(person);
 				set.add(person);
 			} 

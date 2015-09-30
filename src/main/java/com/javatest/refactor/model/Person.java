@@ -1,10 +1,10 @@
-package com.javatest.refactor;
+package com.javatest.refactor.model;
 
 public class Person {
     private String name;
-    private PhoneNumber phoneNumber;
+    private String phoneNumber;
 
-    public Person(String name, PhoneNumber phoneNumber) {
+    public Person(String name, String phoneNumber) {
         this.name = name;
         this.phoneNumber = phoneNumber;
     }
@@ -17,11 +17,11 @@ public class Person {
         this.name = name;
     }
 
-    public PhoneNumber getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(PhoneNumber phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
