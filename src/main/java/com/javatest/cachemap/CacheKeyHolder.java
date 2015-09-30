@@ -1,72 +1,68 @@
 package com.javatest.cachemap;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.LinkedList;
 
+/**
+ * Holds cache keys for CacheMapImpl. to speedup cleaning expired values keys are separated in groups,
+ * and are deleted when whole group is expired. this helps to reduce complexity of throwing outdated values
+ *
+ * @param <T>
+ */
 public class CacheKeyHolder<T> {
-    private List<LinkedList<T>> buckets;
-    private long start;
-    private long timeUnit;
-    private int capacity;
+    private LinkedList<Node<T>> buckets = new LinkedList<>();
+    private long timeUnitSize;
 
-    public CacheKeyHolder(long start, long timeUnit, int capacity) {
-        this.start = start;
-        this.timeUnit = timeUnit;
-        this.capacity = capacity;
-        buckets = preallocateList(capacity);
+    /***
+     * @param timeUnitSize - size of time group in milliseconds
+     */
+    public CacheKeyHolder(long timeUnitSize) {
+        this.timeUnitSize = timeUnitSize;
     }
 
-    public void put(long timestamp, T key) {
-        clearExpired(timestamp);
-        add(timestamp, key);
+    public void put(long expiresAt, long currentTimestamp, T key) {
+        add(expiresAt, key);
+        clearExpired(currentTimestamp);
     }
 
-    private void add(long timestamp, T key) {
-        int hash = timeunitsSinceStart(timestamp);
-        LinkedList<T> coll = getOrCreateBucket(hash);
-        coll.add(key);
-    }
-
-    private LinkedList<T> getOrCreateBucket(int hash) {
-        LinkedList<T> coll = buckets.get(hash);
-        if (coll == null) {
-            coll = new LinkedList<>();
-            buckets.set(hash, coll);
+    public void clearExpired(long expiresAt) {
+        while (buckets.size() > 0 && buckets.peekFirst().getExpiredAt() < expiresAt) {
+            unlinkNode(buckets.pollFirst());
         }
-        return coll;
     }
 
-    private int timeunitsSinceStart(long timestamp) {
-        return (int) ((timestamp - start) / timeUnit);
+    private void unlinkNode(Node<T> tNode) {
+        Node<T> n = tNode;
+        n.setPrev(null);
     }
 
-    public void clearExpired(long timestamp) {
-        int hash = timeunitsSinceStart(timestamp);
-
-        List<LinkedList<T>> newBuckets = preallocateList(capacity);
-
-        if (hash < buckets.size()) {
-            List<LinkedList<T>> c = buckets.subList(hash, buckets.size());
-            newBuckets.addAll(c);
-            start = getStartTimeForBucket(hash);
+    private void add(long expiresAt, T key) {
+        long timeUnit = getTimeUnit(expiresAt);
+        Node<T> newNode = new Node<>(key, null, expiresAt);
+        if (lastBucketExpired(expiresAt)) {
+            Node<T> keyNode = new Node<>(null, newNode, timeUnit);
+            buckets.add(keyNode);
         } else {
-            start = timestamp;
+            insertNode(buckets.peekLast(), newNode);
         }
-
-        buckets = newBuckets;
     }
 
-    private ArrayList<LinkedList<T>> preallocateList(int capacity) {
-        ArrayList<LinkedList<T>> linkedLists = new ArrayList<>(capacity);
-        IntStream.range(0, capacity).forEach(i -> linkedLists.add(new LinkedList<T>()));
-        return linkedLists;
+    private boolean lastBucketExpired(long currentTimestamp) {
+        return buckets.peekLast() == null || buckets.peekLast().getExpiredAt() < currentTimestamp;
     }
 
-    private long getStartTimeForBucket(int hash) {
-        return start + timeUnit * hash;
+    private void insertNode(Node<T> keyNode, Node<T> newNode) {
+        Node<T> prev = keyNode.getPrev();
+        keyNode.setPrev(newNode);
+        newNode.setPrev(prev);
     }
 
-    protected List<LinkedList<T>> getBuckets() {
+    private long getTimeUnit(long expiresAt) {
+        long totalFullTimeUnits = expiresAt / timeUnitSize;
+        return totalFullTimeUnits * timeUnitSize + timeUnitSize;
+    }
+
+    protected LinkedList<Node<T>> getBuckets() {
         return buckets;
     }
+
 }

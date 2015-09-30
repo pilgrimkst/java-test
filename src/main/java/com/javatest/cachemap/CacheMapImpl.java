@@ -12,7 +12,7 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
 
     public CacheMapImpl(Supplier<Long> timestampSupplier) {
         this.timestampSupplier = timestampSupplier;
-        cacheKeys = new CacheKeyHolder<>(timestampSupplier.get(), 1000, 10);
+        cacheKeys = new CacheKeyHolder<>(1000);
     }
 
     @Override
@@ -28,8 +28,8 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
     @Override
     public ValueType put(KeyType key, ValueType value) {
         TimedValue oldValue = map.put(key, new TimedValue(value, timestampSupplier.get()));
-        cacheKeys.put(timestampSupplier.get(), key);
-        return isNullOrExpired(oldValue) ? null : oldValue.value;
+        cacheKeys.put(timestampSupplier.get() + timeToLive, timestampSupplier.get(), key);
+        return oldValue == null || isExpired(oldValue) ? null : oldValue.value;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
     @Override
     public ValueType get(Object key) {
         TimedValue value = map.get(key);
-        return value == null || isNullOrExpired(value) ? null : value.value;
+        return value == null || isExpired(value) ? null : value.value;
     }
 
     @Override
@@ -87,11 +87,11 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
     }
 
     private int numberOfExpired(WeakHashMap<KeyType, TimedValue> map) {
-        return (int) map.entrySet().stream().filter(e -> isNullOrExpired(e.getValue())).count();
+        return (int) map.entrySet().stream().filter(e -> isExpired(e.getValue())).count();
     }
 
-    private boolean isNullOrExpired(TimedValue value) {
-        return value == null || isOutdated(value.createdIn);
+    private boolean isExpired(TimedValue value) {
+        return isOutdated(value.createdIn);
     }
 
     private boolean isOutdated(Long timestamp) {
@@ -99,7 +99,7 @@ public class CacheMapImpl<KeyType, ValueType> implements CacheMap<KeyType, Value
     }
 
     private boolean isNotExpired(TimedValue value) {
-        return !isNullOrExpired(value);
+        return !isExpired(value);
     }
 
     private class TimedValue {
