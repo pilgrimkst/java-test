@@ -9,13 +9,21 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://repo.spring.io/milestone"
+    }
 }
 
 dependencies {
     compile libraries.slf4j,
             libraries.logback,
-            libraries.guava
+            libraries.guava,
+            libraries.springJdbc,
+            libraries.oracleJdbc,
+            libraries.springBoot
+
 
     testCompile libraries.junit,
+            libraries.springBootStarterTest,
             libraries.spock
 }
