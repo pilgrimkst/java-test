@@ -31,5 +31,13 @@ public class PerformanceTestResult {
 	public long getTotalTime() {
 		return totalTime;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "PerformanceTestResult{" +
+				"totalTime=" + totalTime +
+				", minTime=" + minTime +
+				", maxTime=" + maxTime +
+				'}';
+	}
 }
