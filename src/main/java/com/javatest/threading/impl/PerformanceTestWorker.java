@@ -1,4 +1,7 @@
-package com.javatest.threading;
+package com.javatest.threading.impl;
+
+import com.javatest.threading.PerformanceTestResult;
+import com.javatest.threading.impl.PerformanceTestJob;
 
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;

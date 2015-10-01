@@ -1,7 +1,13 @@
-package com.javatest.threading;
+package com.javatest.threading.impl;
+
+import com.javatest.threading.PerformanceTestResult;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.System.nanoTime;
 
 public class PerformanceTestJob extends RecursiveTask<PerformanceTestResult> {
     public static final int NANOS_IN_MILLISECOND = 1_000_000;
@@ -15,9 +21,9 @@ public class PerformanceTestJob extends RecursiveTask<PerformanceTestResult> {
 
 
     private long execute(Runnable runnable) {
-        long start = System.nanoTime();
+        long start = nanoTime();
         runnable.run();
-        long end = System.nanoTime();
+        long end = nanoTime();
         return (end - start) / NANOS_IN_MILLISECOND;
     }
 
@@ -29,8 +35,8 @@ public class PerformanceTestJob extends RecursiveTask<PerformanceTestResult> {
 
         for (int i = 0; i < executionCount; i++) {
             long executionTimeInMillis = execute(runnable);
-            min = Math.min(min, executionTimeInMillis);
-            max = Math.max(max, executionTimeInMillis);
+            min = min(min, executionTimeInMillis);
+            max = max(max, executionTimeInMillis);
             total += executionTimeInMillis;
         }
 

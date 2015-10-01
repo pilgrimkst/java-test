@@ -1,5 +1,6 @@
 package com.javatest.threading
 
+import com.javatest.threading.impl.PerformanceTesterImpl
 import spock.lang.Specification
 
 class PerformanceTesterTest extends Specification {
